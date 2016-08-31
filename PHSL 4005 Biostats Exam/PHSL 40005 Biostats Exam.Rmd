@@ -12,7 +12,7 @@ output: html_document
 ##Alternative Hypothesis
 * A directly proprotional relationship exists between oral body temperature and heart rate.
 
-##Statistical Test(s)
+##Statistical Test
 * One-way ANOVA
 ###Assumptions of the statistical test
 * Gaussian distribution
@@ -206,7 +206,7 @@ mtext("Diagnostic plots for linear regression analysis", outer = TRUE)
 ##Outcome Analysis
 * The data fits all assumptions of a linear regression, including homoskedasticity and normal distribution of the residuals.
 * The variables have a fairly strong negative correlation (-0.07). Because the _p_ value is small (0.002), the null hypothesis can be rejected. 
-* CONCLUSION: running time and calorie consumption are inversely proportional 
+* CONCLUSION: running time and calorie consumption are inversely proportional for this athlete. 
 
 #QUESTION 4
 ```{rQ4}
