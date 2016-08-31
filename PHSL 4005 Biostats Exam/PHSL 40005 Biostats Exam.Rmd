@@ -35,23 +35,38 @@ plot(temp$male~temp$body_temperature,
      xlab = "Oral Body Temperature")
 points(temp$female)
 legend(37.5,85, c("Male", "Female"), fill = c("red", "black"))
+
+# run and print Statistical test (male heart rate versus oral body temperature)
+t.test(body_temperature~male,
+       data = temp,
+       paired = TRUE,
+       na.action = TRUE)
+wilcox.test()
+
 ```
 ##Outcome Analysis
-* 
+* Inferences with this data across sexes must be cautious as most of the heart rate inputs for the females are missing 
+* However, considering only male heart rates, the data suggestss that there is a somewhat directly proportional relationship between 
 
 #QUESTION 2: Handedness and Ataxic Gait in Intoxicated Individuals
 
 ##Null Hypothesis
-* 
+* There is no relationship between handednes and ataxic walking in intoxicated individuals
 
 ##Alternative Hypothesis
-*
+* Ataxic walking in intoxicated individuals and hadedness are related. Individuals tend to orientate themselves in accordance with the dominant side.
 
 ##Statistical Test(s)
-* 
+* Wilcoxin rank-sum 
 ###Assumptions of the statistical test
-* 
+* independent errors
+* data is unmatched (as comparison across are being made for example)
+* samples are drawn from populations witht the same shape distribution
 ```{r Q2_Handedness_and_ataxic_gait}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
 # import and view the dataset 
 HandAtax <- read.csv("HandednessAtaxia.csv")
 handatax<- tbl_df(HandAtax)
@@ -77,40 +92,61 @@ mosaicplot(handatax$final_position~handatax$handedness,
            ylab = "Final Stimble (1= rightwards, 2 = leftwards)",
            xlab = "Handedness (1 = right-handed, 2 = left-handed)")
 
-# Statistical Tests
+# Statistical Test and co (hadedness against first stumble)
 wilcox.test(first_stumble~handedness, 
             data = handatax,
             paired = FALSE)
-pairwise.t.test(handatax$handedness~handatax$first_stumble,
-                p.adjust.method = "bonferroni")
+
+# Statistical Test and co (hadedness against first stumble)
+wilcox.test(final_position~handedness,
+            data = handatax,
+            paired = FALSE)
+
 # so that subsequent graphs are not faceted
 par(mfrow = c(1,1),
     mar = c(4, 4, 2, 1),
     oma = c(0, 0, 1, 0))            
 ```
 ##Outcome Analysis
-
+* The null hypothesis may be rejected as handedness was shown to be related with first stumble (_p_ <0.05) and final position (_p_ = 0.04). These results illustrate that intoxicated individuals are more likely to exhibit ataxic gait that is skewed to her/his dominant side.
 
 #QUESTION 3
 
 ##Null Hypothesis
-* 
+* There is nor relationsip between running time and calories
 
 ##Alternative Hypothesis
-*
+* There is a directly proportional relatiolnship between running time and caloreies consumed
 
 ##Statistical Test(s)
-* 
+* Linear Regression
 ###Assumptions of the statistical test
-* 
+* linear relationship exists between the variables
+* independent observations
+* x variable measured without error
+* normally distributed residuals
+* homoskedastic residuals
+
 ```{r Question 3}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
 # import and view dataset
 timevscal <- read.csv("Timevscalories.csv")
 timcal <- tbl_df(timevscal)
 timcal
 
 # plot the data
-plot(timcal$calories~timcal$time)
+par(mfrow = c(1,0),
+    mar = c(4, 4, 2, 1),
+    oma = c(0, 0, 1, 0))
+
+plot(timcal$calories~timcal$time,
+      main = "Relationship between an amateur runner's running time and calories consumed",
+           ylab = "Calories Consumed (cal)",
+           xlab = "Running Time (s)")
 
 p <- qplot(x = time,
            y = calories,
@@ -128,9 +164,6 @@ timcal.cor
 
 p + annotate("text", x = 2150, y = 420, label = "r = -0.7") + annotate("text", x = 2150, y = 410, label = "p = 0.002")
 
-# add the line of best fit
-abline(lm(calories = time, data = timcal))
-
 
 # to view the subsequent diagnostic graphs in a single plot
 par(mfrow = c(1,2),
@@ -146,15 +179,50 @@ plot(x = timcal.reg$fitted.values,
      y = timcal.reg$residuals,
      xlab = "Fitted Values",
      ylab = "Residuals",
-     main = "Heteroskedasticity of residuals")
+     main = "Homoskedasticity of residuals")
 abline(h = 0)
 
 # perform diagnostic plot to check for normality of residuals
-qqnorm(timcal.reg$residuals, main = "Skewed residual distribution")
+qqnorm(timcal.reg$residuals, main = "Normal residula distribution")
 qqline(timcal.reg$residuals)
 
 # give an overall title
 mtext("Diagnostic plots for linear regression analysis", outer = TRUE)
 ```
 ##Outcome Analysis
-*
+* The data fits all assumptions of a linear regression, including homoskedasticity and normal distribution of the residuals.
+* The variables have a fairly strong negative correlation (-0.07). Because the _p_ value is small (0.002), the null hypothesis can be rejected. 
+* CONCLUSION: running time and calorie consumption are inversely proportional 
+
+#QUESTION 4
+```{rQ4}
+foo <- rnorm(10000, mean = 60, sd = 3) # final mark
+bar <- rnorm(10000, mean = 68, sd = 5) # project mark
+baz <- rep(seq(from = 1997, to = 2006), each = 1) # years
+
+year <- sample(baz, 150, replace = TRUE,
+               prob = c(0.05, 0.05, 0.08, 0.08, 
+                          0.1, 0.13, 0.14, 0.13, 0.12, 0.12))
+project_mark <- sample(bar, 150, replace = TRUE)
+final_mark <- sample(foo, 150, replace = TRUE)
+
+plot_data <- data_frame(year = year,
+                        project_mark = round(project_mark, 1),
+                        final_mark = round(final_mark, 1)) %>%
+    arrange(year)
+
+# view the dataset
+plot_data
+
+# use the gather function and change the "year" column class (tidying)
+data_tidy <- plot_data %>%
+    mutate(year = factor(year)) %>%
+    gather(key = key, value = value, -year) %>%
+    arrange(year)
+
+# plot the data
+with(data_tidy, boxplot(value ~ key,
+                        main = "Comparison between final and project marks(%) between the years 1997 and 2006 for a BSc Honours in Physiology course",
+                        ylab = "Percentage")
+```
+
