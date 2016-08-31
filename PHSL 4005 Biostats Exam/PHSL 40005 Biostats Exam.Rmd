@@ -1,0 +1,160 @@
+---
+title: " PSHL 4005 Biostats Exam"
+author: "Bongani Mveng"
+date: "August 31, 2016"
+output: github_document
+---
+#QUESTION ONE: Oral Body Temperature and Heart Rate
+
+##Null Hypothesis
+* There is no relationship between oral body temperature and heart rate
+
+##Alternative Hypothesis
+* A directly proprotional relationship exists between oral body temperature and heart rate.
+
+##Statistical Test(s)
+* ANOVA
+###Assumptions of the statistical test
+* 
+```{r Q1_BodyTemperature}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+# import and view the dataset
+temp <- read.csv("Body Temp.csv")
+btemp <- tbl_df(temp)
+temp
+
+# explore the data with plots
+plot(temp$male~temp$body_temperature,
+     col="red",
+     main = "Mean oral body temperature  and heart rate at rest in male and female students",
+     ylab = " Heart Rate (beats per minute)",
+     xlab = "Oral Body Temperature")
+points(temp$female)
+legend(37.5,85, c("Male", "Female"), fill = c("red", "black"))
+```
+##Outcome Analysis
+* 
+
+#QUESTION 2: Handedness and Ataxic Gait in Intoxicated Individuals
+
+##Null Hypothesis
+* 
+
+##Alternative Hypothesis
+*
+
+##Statistical Test(s)
+* 
+###Assumptions of the statistical test
+* 
+```{r Q2_Handedness_and_ataxic_gait}
+# import and view the dataset 
+HandAtax <- read.csv("HandednessAtaxia.csv")
+handatax<- tbl_df(HandAtax)
+handatax
+
+
+
+# explore dataset with plots
+boxplot(handatax$first_stumble~handatax$handedness)
+
+# to plot subsequent graphs in a single plot
+par(mfrow = c(1,2),
+    mar = c(4, 4, 2, 1),
+    oma = c(0, 0, 1, 0)) 
+
+mosaicplot(handatax$handedness~handatax$first_stumble,
+           main = "Handedness against position of first stumble",
+           ylab = "First Stumble (1= rightwards, 2 = leftwards)",
+           xlab = "Handedness (1 = right-handed, 2 = left-handed)")
+
+mosaicplot(handatax$final_position~handatax$handedness,
+           main = "Handedness against final position",
+           ylab = "Final Stimble (1= rightwards, 2 = leftwards)",
+           xlab = "Handedness (1 = right-handed, 2 = left-handed)")
+
+# Statistical Tests
+wilcox.test(first_stumble~handedness, 
+            data = handatax,
+            paired = FALSE)
+pairwise.t.test(handatax$handedness~handatax$first_stumble,
+                p.adjust.method = "bonferroni")
+# so that subsequent graphs are not faceted
+par(mfrow = c(1,1),
+    mar = c(4, 4, 2, 1),
+    oma = c(0, 0, 1, 0))            
+```
+##Outcome Analysis
+
+
+#QUESTION 3
+
+##Null Hypothesis
+* 
+
+##Alternative Hypothesis
+*
+
+##Statistical Test(s)
+* 
+###Assumptions of the statistical test
+* 
+```{r Question 3}
+# import and view dataset
+timevscal <- read.csv("Timevscalories.csv")
+timcal <- tbl_df(timevscal)
+timcal
+
+# plot the data
+plot(timcal$calories~timcal$time)
+
+p <- qplot(x = time,
+           y = calories,
+           data = timcal,
+           main = "Relationship between an amateur runner's running time and calories consumed",
+           ylab = "Calories Consumed (cal)",
+           xlab = "Running Time (s)")
+
+# perform a Pearson Correlation and print the summary statistics
+
+timcal.cor <- with(timcal, cor.test(method = 'pearson', x = time, y = calories))
+timcal.cor
+
+# annotate r and p values onto the plot
+
+p + annotate("text", x = 2150, y = 420, label = "r = -0.7") + annotate("text", x = 2150, y = 410, label = "p = 0.002")
+
+# add the line of best fit
+abline(lm(calories = time, data = timcal))
+
+
+# to view the subsequent diagnostic graphs in a single plot
+par(mfrow = c(1,2),
+    mar = c(4, 4, 2, 1),
+    oma = c(0, 0, 1, 0))
+# perform and print  summary of linear regression
+timcal.reg <- lm(calories~time, data = timcal)
+summary(timcal.reg)
+
+# plots diagnostic plots for linear regression
+
+plot(x = timcal.reg$fitted.values,
+     y = timcal.reg$residuals,
+     xlab = "Fitted Values",
+     ylab = "Residuals",
+     main = "Heteroskedasticity of residuals")
+abline(h = 0)
+
+# perform diagnostic plot to check for normality of residuals
+qqnorm(timcal.reg$residuals, main = "Skewed residual distribution")
+qqline(timcal.reg$residuals)
+
+# give an overall title
+mtext("Diagnostic plots for linear regression analysis", outer = TRUE)
+```
+##Outcome Analysis
+*
