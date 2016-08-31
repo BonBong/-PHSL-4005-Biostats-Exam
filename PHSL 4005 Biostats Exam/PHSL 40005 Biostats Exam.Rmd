@@ -37,11 +37,6 @@ points(temp$female)
 legend(37.5,85, c("Male", "Female"), fill = c("red", "black"))
 
 # run and print Statistical test (male heart rate versus oral body temperature)
-t.test(body_temperature~male,
-       data = temp,
-       paired = TRUE,
-       na.action = TRUE)
-wilcox.test()
 
 ```
 ##Outcome Analysis
@@ -71,7 +66,6 @@ library(knitr)
 HandAtax <- read.csv("HandednessAtaxia.csv")
 handatax<- tbl_df(HandAtax)
 handatax
-
 
 
 # explore dataset with plots
@@ -155,6 +149,11 @@ p <- qplot(x = time,
            ylab = "Calories Consumed (cal)",
            xlab = "Running Time (s)")
 
+# Calculate slope and intercept of line of best fit
+timcal.coef <- coef(lm(time~calories, data = timcal))
+timcal.coef
+
+
 # perform a Pearson Correlation and print the summary statistics
 
 timcal.cor <- with(timcal, cor.test(method = 'pearson', x = time, y = calories))
@@ -164,6 +163,8 @@ timcal.cor
 
 p + annotate("text", x = 2150, y = 420, label = "r = -0.7") + annotate("text", x = 2150, y = 410, label = "p = 0.002")
 
+# add line of best fit
+p + geom_abline(intercept = 2629.4, slope = -1.6)
 
 # to view the subsequent diagnostic graphs in a single plot
 par(mfrow = c(1,2),
@@ -196,6 +197,16 @@ mtext("Diagnostic plots for linear regression analysis", outer = TRUE)
 
 #QUESTION 4
 ```{rQ4}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+par(mfrow = c(1,2),
+    mar = c(4, 4, 2, 1),
+    oma = c(0, 0, 1, 0))
+
+
 foo <- rnorm(10000, mean = 60, sd = 3) # final mark
 bar <- rnorm(10000, mean = 68, sd = 5) # project mark
 baz <- rep(seq(from = 1997, to = 2006), each = 1) # years
@@ -214,6 +225,9 @@ plot_data <- data_frame(year = year,
 # view the dataset
 plot_data
 
+# plot the data 
+pdf('FinalVSProject.pdf', paper = 'a4R')
+
 # use the gather function and change the "year" column class (tidying)
 data_tidy <- plot_data %>%
     mutate(year = factor(year)) %>%
@@ -223,6 +237,7 @@ data_tidy <- plot_data %>%
 # plot the data
 with(data_tidy, boxplot(value ~ key,
                         main = "Comparison between final and project marks(%) between the years 1997 and 2006 for a BSc Honours in Physiology course",
-                        ylab = "Percentage")
+                        ylab = "Percentage"))
+
 ```
 
