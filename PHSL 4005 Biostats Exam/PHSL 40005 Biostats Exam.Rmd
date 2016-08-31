@@ -66,6 +66,7 @@ summary(foo)
 
 ##Statistical Test(s)
 * Wilcoxin rank-sum 
+
 ###Assumptions of the statistical test
 * independent errors
 * data is unmatched (as comparison across are being made for example)
@@ -128,6 +129,7 @@ par(mfrow = c(1,1),
 
 ##Statistical Test(s)
 * Linear Regression
+
 ###Assumptions of the statistical test
 * linear relationship exists between the variables
 * independent observations
@@ -145,11 +147,6 @@ library(knitr)
 timevscal <- read.csv("Timevscalories.csv")
 timcal <- tbl_df(timevscal)
 timcal
-
-# plot the data
-par(mfrow = c(1,0),
-    mar = c(4, 4, 2, 1),
-    oma = c(0, 0, 1, 0))
 
 plot(timcal$calories~timcal$time,
       main = "Relationship between an amateur runner's running time and calories consumed",
